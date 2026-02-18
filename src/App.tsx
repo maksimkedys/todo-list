@@ -1,10 +1,12 @@
-// import { useState } from 'react'
+import Board from './components/Board'
+import Toolbar from './components/Toolbar'
 
-function App() {
+const App = () => {
   return (
-    <>
-      <div>Hello World</div>
-    </>
+    <div className="bg-primary-950 flex h-screen flex-col">
+      <Toolbar />
+      <Board />
+    </div>
   )
 }
 
