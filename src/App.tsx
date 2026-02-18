@@ -3,7 +3,7 @@ import Toolbar from './components/Toolbar'
 
 const App = () => {
   return (
-    <div className="bg-primary-950 flex h-screen flex-col">
+    <div className="bg-primary-900 mx-auto flex w-full max-w-7xl flex-col rounded-xl">
       <Toolbar />
       <Board />
     </div>

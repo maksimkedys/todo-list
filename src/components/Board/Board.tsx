@@ -1,10 +1,22 @@
-import { useAppContext } from '../../hooks/useAppContext'
 import Column from '../Column'
+import { useAppContext } from '../../hooks/useAppContext'
 
 const Board = () => {
-  const { state } = useAppContext()
+  const { columns, addTask, deleteColumn } = useAppContext()
 
-  return <div className="flex flex-1 gap-4 overflow-x-auto p-4"></div>
+  return (
+    <div className="flex flex-1 gap-4 overflow-x-auto p-4">
+      {columns.map((column) => (
+        <Column
+          key={column.id}
+          column={column}
+          tasks={column.tasks}
+          onAddTask={addTask}
+          onDeleteColumn={deleteColumn}
+        />
+      ))}
+    </div>
+  )
 }
 
 export default Board

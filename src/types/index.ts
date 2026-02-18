@@ -1,17 +1,11 @@
-export type Task = {
+export type TaskType = {
   id: string
   text: string
   completed: boolean
 }
 
-export type Column = {
+export type ColumnType = {
   id: string
   title: string
-  taskIds: string[]
-}
-
-export type AppState = {
-  tasks: Record<string, Task>
-  columns: Record<string, Column>
-  columnOrder: string[]
+  tasks: TaskType[]
 }
