@@ -9,3 +9,21 @@ export type ColumnType = {
   title: string
   tasks: TaskType[]
 }
+
+export enum ButtonVariant {
+  Primary = 'primary',
+  Secondary = 'secondary',
+  OutlineDashed = 'outline-dashed',
+  GhostIcon = 'ghost-icon',
+}
+
+export enum IconName {
+  Trash = 'trash',
+  Plus = 'plus',
+  Search = 'search',
+}
+
+export enum InputVariant {
+  Default = 'default',
+  Search = 'search',
+}
