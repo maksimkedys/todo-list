@@ -1,0 +1,13 @@
+#!/usr/bin/env sh
+echo "Running pre-push hook..."
+echo "Started at: $(date '+%H:%M:%S')"
+echo ""
+echo "Running lint + type-check..."
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+npm run lint
+
+echo ""
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "All pre-push checks passed!"
+echo "Finished at: $(date '+%H:%M:%S')"

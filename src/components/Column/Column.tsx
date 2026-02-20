@@ -4,7 +4,6 @@ import InlineForm from '../InlineForm'
 import Button from '../Button'
 import Icon from '../Icon'
 import { ButtonVariant, IconName } from '../../types'
-import cn from 'classnames'
 import useInlineForm from '../InlineForm/useInlineForm'
 
 interface ColumnProps {
