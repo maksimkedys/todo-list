@@ -22,28 +22,31 @@ const Toolbar = () => {
   })
 
   return (
-    <div className="flex items-center justify-between gap-4 p-4">
-      <Search query={searchQuery} onQueryChange={setSearchQuery} />
-      <Button
-        variant={ButtonVariant.OutlineDashed}
-        onClick={setIsAddingColumn}
-        className="shrink-0"
-      >
-        <Icon name={IconName.Plus} size={20} className="text-primary-400" />
-        Add column
-      </Button>
-
-      {isAddingColumn && (
-        <InlineForm
-          value={newColumnTitle}
-          onChange={setNewColumnTitle}
-          placeholder="Column title..."
-          onSubmit={handleAddColumn}
-          onCancel={handleCancel}
-          onKeyDown={handleKeyDown}
-        />
-      )}
-    </div>
+    <>
+      <div className="flex items-center justify-between gap-4 p-4">
+        <Search query={searchQuery} onQueryChange={setSearchQuery} />
+        <Button
+          variant={ButtonVariant.OutlineDashed}
+          onClick={setIsAddingColumn}
+          className="shrink-0"
+        >
+          <Icon name={IconName.Plus} size={20} className="text-primary-400" />
+          Add column
+        </Button>
+      </div>
+      <div className="px-4">
+        {isAddingColumn && (
+          <InlineForm
+            value={newColumnTitle}
+            onChange={setNewColumnTitle}
+            placeholder="Column title..."
+            onSubmit={handleAddColumn}
+            onCancel={handleCancel}
+            onKeyDown={handleKeyDown}
+          />
+        )}
+      </div>
+    </>
   )
 }
 

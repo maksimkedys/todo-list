@@ -9,11 +9,18 @@ import useInlineForm from '../InlineForm/useInlineForm'
 interface ColumnProps {
   column: ColumnType
   tasks?: TaskType[]
+  searchQuery?: string
   onAddTask?: (columnId: string, taskText: string) => void
   onDeleteColumn?: (columnId: string) => void
 }
 
-const Column = ({ column, tasks, onAddTask, onDeleteColumn }: ColumnProps) => {
+const Column = ({ column, tasks, searchQuery = '', onAddTask, onDeleteColumn }: ColumnProps) => {
+  const query = searchQuery.trim().toLowerCase()
+  const displayedTasks =
+    query === ''
+      ? column.tasks
+      : column.tasks.filter((task) => task.text.toLowerCase().includes(query))
+
   const handleSubmitTask = (taskText: string) => {
     if (onAddTask) {
       onAddTask(column.id, taskText)
@@ -33,7 +40,7 @@ const Column = ({ column, tasks, onAddTask, onDeleteColumn }: ColumnProps) => {
     validate: (val) => !!val.trim(),
   })
 
-  if (!tasks) return null
+  if (tasks === undefined) return null
 
   return (
     <div className="bg-primary-950 flex w-320 flex-col gap-2 rounded-xl p-4">
@@ -46,13 +53,18 @@ const Column = ({ column, tasks, onAddTask, onDeleteColumn }: ColumnProps) => {
             className="shrink-0"
             aria-label="Delete column"
           >
-            <Icon name={IconName.Trash} size={18} className="text-primary-400" />
+            <Icon
+              name={IconName.Trash}
+              size={20}
+              className="text-primary-400 hover:text-primary-300 transition-all active:opacity-80"
+              aria-label="Delete column"
+            />
           </Button>
         )}
       </div>
       <div className="flex flex-1 flex-col gap-2">
-        {column.tasks.map((task) => (
-          <Task key={task.id} task={task} />
+        {displayedTasks.map((task) => (
+          <Task key={task.id} task={task} highlightQuery={searchQuery} />
         ))}
 
         {isAddingTask ? (

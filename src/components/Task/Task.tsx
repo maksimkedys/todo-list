@@ -4,15 +4,18 @@ import { useAppContext } from '../../hooks/useAppContext'
 import Button from '../Button'
 import Icon from '../Icon'
 import { ButtonVariant, IconName } from '../../types'
+import { getHighlightParts } from '../../utils/highlight'
 
 interface TaskProps {
   task: TaskType
+  highlightQuery?: string
 }
 
-const Task = ({ task }: TaskProps) => {
+const Task = ({ task, highlightQuery }: TaskProps) => {
   const { deleteTask, toggleTaskCompletion } = useAppContext()
 
   const { id, text, completed } = task
+  const parts = getHighlightParts(text, highlightQuery ?? '')
 
   return (
     <div
@@ -41,7 +44,18 @@ const Task = ({ task }: TaskProps) => {
           completed && 'text-primary-400 line-through',
         )}
       >
-        {text}
+        {parts.map((part) =>
+          part.type === 'match' ? (
+            <mark
+              key={part.key}
+              className="bg-primary-600 text-primary-100 rounded px-0.5 font-medium"
+            >
+              {part.value}
+            </mark>
+          ) : (
+            part.value
+          ),
+        )}
       </span>
       <Button
         variant={ButtonVariant.GhostIcon}

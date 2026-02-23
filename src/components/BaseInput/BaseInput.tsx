@@ -8,13 +8,13 @@ interface BaseInputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'on
 }
 
 const baseClasses =
-  'w-full rounded border px-3 py-2 text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2'
+  'w-full rounded border px-3 py-2 text-sm transition-colors focus:outline-none focus:ring-offset-0'
 
 const variantClasses: Record<InputVariant, string> = {
   [InputVariant.Default]:
     'border-primary-700 bg-primary-800 text-primary-100 placeholder-primary-500 focus:border-primary-500 focus:ring-primary-500 focus:ring-offset-primary-900',
   [InputVariant.Search]:
-    'border-gray-300 bg-white text-gray-800 placeholder-gray-400 focus:border-primary-500 focus:ring-primary-500/30 focus:ring-offset-white',
+    'border-primary-900 bg-primary-800 text-primary-100 placeholder-primary-500 focus:border-primary-500',
 }
 
 const BaseInput = ({
