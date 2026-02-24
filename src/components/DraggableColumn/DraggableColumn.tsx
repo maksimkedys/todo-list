@@ -69,7 +69,7 @@ const DraggableColumn = ({
       ref={ref}
       className={cn(
         'relative cursor-grab overflow-hidden rounded-xl active:cursor-grabbing',
-        isOver && 'border-primary-500 bg-primary-900/80 border',
+        isOver && 'border-primary-500 bg-surface-800/90 border',
       )}
     >
       <Column

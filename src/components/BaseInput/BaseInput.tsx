@@ -12,9 +12,9 @@ const baseClasses =
 
 const variantClasses: Record<InputVariant, string> = {
   [InputVariant.Default]:
-    'border-primary-700 bg-primary-800 text-primary-100 placeholder-primary-500 focus:border-primary-500 focus:ring-primary-500 focus:ring-offset-primary-900',
+    'border-surface-600 bg-surface-800 text-primary-50 placeholder-primary-500 focus:border-primary-500 focus:ring-primary-500 focus:ring-offset-surface-900',
   [InputVariant.Search]:
-    'border-primary-900 bg-primary-800 text-primary-100 placeholder-primary-500 focus:border-primary-500',
+    'border-surface-600 bg-surface-800 text-primary-50 placeholder-primary-500 focus:border-primary-500',
 }
 
 const BaseInput = memo(

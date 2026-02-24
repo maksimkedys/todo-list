@@ -39,11 +39,11 @@ const Task = ({ task, highlightQuery, isSelected }: TaskProps) => {
   return (
     <div
       className={cn(
-        'group border-primary-800 bg-primary-900 flex items-center gap-2 rounded-lg border p-3 sm:gap-3 sm:p-4',
+        'group border-surface-600 bg-surface-700 flex items-center gap-2 rounded-lg border p-3 sm:gap-3 sm:p-4',
         'shadow-soft transition-all duration-200',
-        'hover:border-primary-700 hover:shadow-soft-lg hover:-translate-y-0.5',
+        'hover:border-surface-500 hover:shadow-soft-lg hover:-translate-y-0.5',
         completed && 'opacity-60',
-        isSelected && 'ring-primary-500 ring-offset-primary-950 ring-2 ring-offset-2',
+        isSelected && 'ring-primary-500 ring-offset-surface-900 ring-2 ring-offset-2',
       )}
     >
       <input
@@ -52,8 +52,8 @@ const Task = ({ task, highlightQuery, isSelected }: TaskProps) => {
         onChange={() => toggleTaskSelection(id)}
         title="Select task"
         className={cn(
-          'border-primary-700 bg-primary-800 text-primary-500 h-4 w-4 shrink-0 cursor-pointer rounded transition-colors sm:h-5 sm:w-5',
-          'focus:ring-primary-500 focus:ring-offset-primary-900 focus:ring-2 focus:ring-offset-2',
+          'border-surface-600 bg-surface-800 text-primary-500 h-4 w-4 shrink-0 cursor-pointer rounded transition-colors sm:h-5 sm:w-5',
+          'focus:ring-primary-500 focus:ring-offset-surface-900 focus:ring-2 focus:ring-offset-2',
         )}
       />
       <input
@@ -62,8 +62,8 @@ const Task = ({ task, highlightQuery, isSelected }: TaskProps) => {
         onChange={() => toggleTaskCompletion(id)}
         title="Mark complete"
         className={cn(
-          'border-primary-700 bg-primary-800 text-primary-500 h-4 w-4 shrink-0 cursor-pointer rounded transition-colors sm:h-5 sm:w-5',
-          'focus:ring-primary-500 focus:ring-offset-primary-900 focus:ring-2 focus:ring-offset-2',
+          'border-surface-600 bg-surface-800 text-primary-500 h-4 w-4 shrink-0 cursor-pointer rounded transition-colors sm:h-5 sm:w-5',
+          'focus:ring-primary-500 focus:ring-offset-surface-900 focus:ring-2 focus:ring-offset-2',
         )}
       />
       {isEditing ? (

@@ -27,7 +27,7 @@ const InlineForm = ({
   onKeyDown,
 }: InlineFormProps) => {
   return (
-    <div className="border-primary-700 bg-primary-900 shadow-soft rounded-lg border p-2 sm:p-3">
+    <div className="border-surface-700 bg-surface-800 shadow-soft rounded-lg border p-2 sm:p-3">
       <BaseInput
         variant={InputVariant.Default}
         value={value}

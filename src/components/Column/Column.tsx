@@ -87,8 +87,8 @@ const Column = ({
   return (
     <div
       className={cn(
-        'bg-primary-950 flex flex-col gap-2 overflow-hidden rounded-xl p-3 sm:p-4',
-        isDropTarget && 'z-1 bg-[#000000]',
+        'bg-surface-800 border-surface-700/70 flex flex-col gap-2 overflow-hidden rounded-xl border p-3 sm:p-4',
+        isDropTarget && 'ring-primary-500 ring-1',
       )}
     >
       <div className="group text-primary-100 mb-1 flex items-start justify-between gap-2">
