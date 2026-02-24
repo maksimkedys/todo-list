@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import { memo, type InputHTMLAttributes } from 'react'
+import { forwardRef, memo, type InputHTMLAttributes } from 'react'
 import { InputVariant } from '../../types'
 
 interface BaseInputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'onChange'> {
@@ -17,22 +17,21 @@ const variantClasses: Record<InputVariant, string> = {
     'border-primary-900 bg-primary-800 text-primary-100 placeholder-primary-500 focus:border-primary-500',
 }
 
-const BaseInput = ({
-  variant = InputVariant.Default,
-  className,
-  onChange,
-  value,
-  ...props
-}: BaseInputProps) => {
-  return (
-    <input
-      type="text"
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      className={cn(baseClasses, variantClasses[variant], className)}
-      {...props}
-    />
-  )
-}
+const BaseInput = memo(
+  forwardRef<HTMLInputElement, BaseInputProps>(
+    ({ variant = InputVariant.Default, className, onChange, value, ...props }, ref) => {
+      return (
+        <input
+          ref={ref}
+          type="text"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className={cn(baseClasses, variantClasses[variant], className)}
+          {...props}
+        />
+      )
+    },
+  ),
+)
 
-export default memo(BaseInput)
+export default BaseInput

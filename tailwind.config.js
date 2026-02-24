@@ -38,7 +38,7 @@ export default {
         320: '320px',
       },
       maxWidth: {
-        '7xl': '80rem',
+        '7xl': '64rem',
       },
       minWidth: {
         320: '320px',

@@ -4,7 +4,7 @@ import Button from '../Button'
 import Icon from '../Icon'
 import { useAppContext } from '../../hooks/useAppContext'
 import { ButtonVariant, IconName } from '../../types'
-import useInlineForm from '../InlineForm/useInlineForm'
+import useInlineForm from '../../hooks/useInlineForm'
 
 const Toolbar = () => {
   const { searchQuery, setSearchQuery, addColumn } = useAppContext()
@@ -23,18 +23,18 @@ const Toolbar = () => {
 
   return (
     <>
-      <div className="flex items-center justify-between gap-4 p-4">
+      <div className="flex min-w-0 flex-col gap-3 p-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:p-4">
         <Search query={searchQuery} onQueryChange={setSearchQuery} />
         <Button
           variant={ButtonVariant.OutlineDashed}
           onClick={setIsAddingColumn}
-          className="shrink-0"
+          className="w-full shrink-0 sm:w-auto"
         >
           <Icon name={IconName.Plus} size={20} className="text-primary-400" />
           Add column
         </Button>
       </div>
-      <div className="px-4">
+      <div className="px-3 sm:px-4">
         {isAddingColumn && (
           <InlineForm
             value={newColumnTitle}

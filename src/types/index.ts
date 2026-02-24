@@ -21,6 +21,7 @@ export enum IconName {
   Trash = 'trash',
   Plus = 'plus',
   Search = 'search',
+  Edit = 'edit',
 }
 
 export enum InputVariant {

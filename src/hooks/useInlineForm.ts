@@ -15,6 +15,7 @@ interface UseInlineFormReturn {
   handleKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void
   handleCancel: () => void
   startAdding: () => void
+  startEditing: (initialValue: string) => void
 }
 
 const useInlineForm = ({
@@ -52,6 +53,12 @@ const useInlineForm = ({
   }, [defaultValue])
 
   const startAdding = useCallback(() => {
+    setValue(defaultValue)
+    setIsOpen(true)
+  }, [defaultValue])
+
+  const startEditing = useCallback((initialValue: string) => {
+    setValue(initialValue)
     setIsOpen(true)
   }, [])
 
@@ -63,6 +70,7 @@ const useInlineForm = ({
     handleKeyDown,
     handleCancel,
     startAdding,
+    startEditing,
   }
 }
 

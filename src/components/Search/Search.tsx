@@ -10,7 +10,7 @@ interface SearchProps {
 
 const Search = ({ query, onQueryChange }: SearchProps) => {
   return (
-    <div className={cn('relative', 'flex-1')}>
+    <div className={cn('relative min-w-0 flex-1')}>
       <Icon
         name={IconName.Search}
         size={16}

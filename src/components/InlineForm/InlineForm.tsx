@@ -27,7 +27,7 @@ const InlineForm = ({
   onKeyDown,
 }: InlineFormProps) => {
   return (
-    <div className="border-primary-700 bg-primary-900 shadow-soft rounded-lg border p-3">
+    <div className="border-primary-700 bg-primary-900 shadow-soft rounded-lg border p-2 sm:p-3">
       <BaseInput
         variant={InputVariant.Default}
         value={value}
@@ -37,7 +37,7 @@ const InlineForm = ({
         autoFocus
       />
 
-      <div className="mt-2 flex gap-2">
+      <div className="mt-2 flex flex-wrap gap-2">
         <Button variant={ButtonVariant.Primary} onClick={onSubmit} disabled={submitDisabled}>
           {submitLabel}
         </Button>

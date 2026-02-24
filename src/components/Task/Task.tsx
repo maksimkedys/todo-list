@@ -1,76 +1,133 @@
 import cn from 'classnames'
 import type { TaskType } from '../../types'
 import { useAppContext } from '../../hooks/useAppContext'
+import { useInlineEdit } from '../../hooks/useInlineEdit'
 import Button from '../Button'
 import Icon from '../Icon'
+import BaseInput from '../BaseInput'
+import { InputVariant } from '../../types'
 import { ButtonVariant, IconName } from '../../types'
 import { getHighlightParts } from '../../utils/highlight'
 
 interface TaskProps {
   task: TaskType
   highlightQuery?: string
+  isSelected?: boolean
 }
 
-const Task = ({ task, highlightQuery }: TaskProps) => {
-  const { deleteTask, toggleTaskCompletion } = useAppContext()
-
+const Task = ({ task, highlightQuery, isSelected }: TaskProps) => {
+  const { deleteTask, toggleTaskCompletion, toggleTaskSelection, editTask } = useAppContext()
   const { id, text, completed } = task
   const parts = getHighlightParts(text, highlightQuery ?? '')
+
+  const {
+    isEditing,
+    value: editValue,
+    setValue: setEditValue,
+    inputRef,
+    startEditing,
+    save,
+    handleKeyDown,
+  } = useInlineEdit({
+    currentValue: text,
+    onSave: (value) => {
+      const trimmed = value.trim()
+      if (trimmed) editTask(id, trimmed)
+    },
+  })
 
   return (
     <div
       className={cn(
-        'group border-primary-800 bg-primary-900 flex items-center gap-3 rounded-lg border p-4',
+        'group border-primary-800 bg-primary-900 flex items-center gap-2 rounded-lg border p-3 sm:gap-3 sm:p-4',
         'shadow-soft transition-all duration-200',
         'hover:border-primary-700 hover:shadow-soft-lg hover:-translate-y-0.5',
         completed && 'opacity-60',
+        isSelected && 'ring-primary-500 ring-offset-primary-950 ring-2 ring-offset-2',
       )}
     >
       <input
         type="checkbox"
-        checked={completed}
-        onChange={() => {
-          toggleTaskCompletion(id)
-        }}
+        checked={isSelected}
+        onChange={() => toggleTaskSelection(id)}
+        title="Select task"
         className={cn(
-          'border-primary-700 bg-primary-800 text-primary-500 h-5 w-5 cursor-pointer rounded',
+          'border-primary-700 bg-primary-800 text-primary-500 h-4 w-4 shrink-0 cursor-pointer rounded transition-colors sm:h-5 sm:w-5',
           'focus:ring-primary-500 focus:ring-offset-primary-900 focus:ring-2 focus:ring-offset-2',
-          'transition-colors',
         )}
       />
-      <span
+      <input
+        type="checkbox"
+        checked={completed}
+        onChange={() => toggleTaskCompletion(id)}
+        title="Mark complete"
         className={cn(
-          'text-primary-100 flex-1 text-sm font-medium',
-          completed && 'text-primary-400 line-through',
+          'border-primary-700 bg-primary-800 text-primary-500 h-4 w-4 shrink-0 cursor-pointer rounded transition-colors sm:h-5 sm:w-5',
+          'focus:ring-primary-500 focus:ring-offset-primary-900 focus:ring-2 focus:ring-offset-2',
         )}
-      >
-        {parts.map((part) =>
-          part.type === 'match' ? (
-            <mark
-              key={part.key}
-              className="bg-primary-600 text-primary-100 rounded px-0.5 font-medium"
-            >
-              {part.value}
-            </mark>
-          ) : (
-            part.value
-          ),
-        )}
-      </span>
-      <Button
-        variant={ButtonVariant.GhostIcon}
-        onClick={() => {
-          deleteTask(id)
-        }}
-        className="opacity-0 transition-opacity group-hover:opacity-100 hover:opacity-100"
-        aria-label="Delete task"
-      >
-        <Icon
-          name={IconName.Trash}
-          size={20}
-          className="text-primary-400 hover:text-primary-300 transition-colors"
+      />
+      {isEditing ? (
+        <BaseInput
+          ref={inputRef}
+          variant={InputVariant.Default}
+          value={editValue}
+          onChange={setEditValue}
+          onBlur={save}
+          onKeyDown={handleKeyDown}
+          className={cn(
+            'min-w-0 flex-1 text-xs font-medium sm:text-sm',
+            completed && 'text-primary-400 line-through',
+          )}
         />
-      </Button>
+      ) : (
+        <span
+          className={cn(
+            'text-primary-100 flex-1 text-xs font-medium sm:text-sm',
+            completed && 'text-primary-400 line-through',
+          )}
+        >
+          {parts.map((part) =>
+            part.type === 'match' ? (
+              <mark
+                key={part.key}
+                className="bg-primary-600 text-primary-100 rounded px-0.5 font-medium"
+              >
+                {part.value}
+              </mark>
+            ) : (
+              part.value
+            ),
+          )}
+        </span>
+      )}
+      {!isEditing && (
+        <>
+          <Button
+            variant={ButtonVariant.GhostIcon}
+            onClick={startEditing}
+            className="opacity-100 transition-opacity sm:opacity-0 sm:group-hover:opacity-100 sm:hover:opacity-100"
+            aria-label="Edit task"
+          >
+            <Icon
+              name={IconName.Edit}
+              size={20}
+              className="text-primary-400 hover:text-primary-300 transition-colors"
+            />
+          </Button>
+          <Button
+            variant={ButtonVariant.GhostIcon}
+            onClick={() => deleteTask(id)}
+            className="opacity-100 transition-opacity sm:opacity-0 sm:group-hover:opacity-100 sm:hover:opacity-100"
+            aria-label="Delete task"
+          >
+            <Icon
+              name={IconName.Trash}
+              size={20}
+              className="text-primary-400 hover:text-primary-300 transition-colors"
+            />
+          </Button>
+        </>
+      )}
     </div>
   )
 }

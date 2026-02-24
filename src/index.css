@@ -6,10 +6,15 @@
     color-scheme: light dark;
   }
 
+  #root {
+    @apply flex w-full flex-1 flex-col items-center justify-center;
+  }
+
   body {
-    @apply flex min-h-screen min-w-320 items-center justify-center;
+    @apply flex min-h-screen w-full flex-col items-center overflow-x-hidden;
     @apply font-sans;
     @apply bg-primary-950 text-primary-50;
+    @apply px-2 py-4 sm:px-4;
   }
 
   a {
