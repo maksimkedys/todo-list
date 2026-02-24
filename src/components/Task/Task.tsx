@@ -50,10 +50,15 @@ const Task = ({ task, highlightQuery, isSelected }: TaskProps) => {
         type="checkbox"
         checked={isSelected}
         onChange={() => toggleTaskSelection(id)}
-        title="Select task"
+        title="Select for bulk actions"
+        aria-label="Select task"
         className={cn(
-          'border-surface-600 bg-surface-800 text-primary-500 h-4 w-4 shrink-0 cursor-pointer rounded transition-colors sm:h-5 sm:w-5',
+          'h-4 w-4 shrink-0 cursor-pointer transition-colors sm:h-5 sm:w-5',
+          'border-primary-500/50 bg-surface-800 appearance-none rounded border-2',
           'focus:ring-primary-500 focus:ring-offset-surface-900 focus:ring-2 focus:ring-offset-2',
+          'checked:border-primary-500 checked:bg-primary-500',
+          'checked:bg-size-[12px] checked:bg-center checked:bg-no-repeat',
+          "checked:bg-[url('data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 13l4 4L19 7'/%3E%3C/svg%3E')]",
         )}
       />
       <input
@@ -61,9 +66,14 @@ const Task = ({ task, highlightQuery, isSelected }: TaskProps) => {
         checked={completed}
         onChange={() => toggleTaskCompletion(id)}
         title="Mark complete"
+        aria-label="Mark task complete"
         className={cn(
-          'border-surface-600 bg-surface-800 text-primary-500 h-4 w-4 shrink-0 cursor-pointer rounded transition-colors sm:h-5 sm:w-5',
-          'focus:ring-primary-500 focus:ring-offset-surface-900 focus:ring-2 focus:ring-offset-2',
+          'h-4 w-4 shrink-0 cursor-pointer transition-colors sm:h-5 sm:w-5',
+          'bg-surface-800 appearance-none rounded-full border-2 border-green-500/50',
+          'focus:ring-offset-surface-900 focus:ring-2 focus:ring-green-500 focus:ring-offset-2',
+          'checked:border-green-500 checked:bg-green-500',
+          'checked:bg-size-[12px] checked:bg-center checked:bg-no-repeat',
+          "checked:bg-[url('data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 13l4 4L19 7'/%3E%3C/svg%3E')]",
         )}
       />
       {isEditing ? (

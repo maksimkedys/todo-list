@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import type { ColumnType, TaskType } from '../../types'
+import type { ColumnType } from '../../types'
 import DraggableTask from '../DraggableTask'
 import InlineForm from '../InlineForm'
 import Button from '../Button'
@@ -7,13 +7,13 @@ import Icon from '../Icon'
 import BaseInput from '../BaseInput'
 import { useAppContext } from '../../hooks/useAppContext'
 import { useInlineEdit } from '../../hooks/useInlineEdit'
-import { ButtonVariant, IconName } from '../../types'
+import { ButtonVariant, IconName, TaskFilter } from '../../types'
 import { InputVariant } from '../../types'
 import useInlineForm from '../../hooks/useInlineForm'
+import { fuzzyMatch } from '../../utils/fuzzySearch'
 
 interface ColumnProps {
   column: ColumnType
-  tasks?: TaskType[]
   searchQuery?: string
   onAddTask?: (columnId: string, taskText: string) => void
   onDeleteColumn?: (columnId: string) => void
@@ -22,13 +22,13 @@ interface ColumnProps {
 
 const Column = ({
   column,
-  tasks,
   searchQuery = '',
   onAddTask,
   onDeleteColumn,
   isDropTarget,
 }: ColumnProps) => {
   const {
+    taskFilter,
     selectedTaskIds,
     selectAllTasksInColumn,
     deselectAllTasksInColumn,
@@ -37,11 +37,16 @@ const Column = ({
     moveTask,
   } = useAppContext()
 
-  const query = searchQuery.trim().toLowerCase()
+  const query = searchQuery.trim()
+  const tasksMatchingQuery =
+    query === '' ? column.tasks : column.tasks.filter((task) => fuzzyMatch(task.text, query))
+
   const displayedTasks =
-    query === ''
-      ? column.tasks
-      : column.tasks.filter((task) => task.text.toLowerCase().includes(query))
+    taskFilter === TaskFilter.Completed
+      ? tasksMatchingQuery.filter((task) => task.completed)
+      : taskFilter === TaskFilter.Incomplete
+        ? tasksMatchingQuery.filter((task) => !task.completed)
+        : tasksMatchingQuery
 
   const handleSubmitTask = (taskText: string) => {
     if (onAddTask) {
@@ -82,8 +87,6 @@ const Column = ({
     else selectAllTasksInColumn(column.id)
   }
 
-  if (tasks === undefined) return null
-
   return (
     <div
       className={cn(
@@ -100,8 +103,12 @@ const Column = ({
               onChange={handleSelectAllClick}
               title="Select all tasks in column"
               className={cn(
-                'border-primary-700 bg-primary-800 text-primary-500 h-4 w-4 shrink-0 cursor-pointer rounded sm:h-5 sm:w-5',
-                'focus:ring-primary-500 focus:ring-offset-primary-950 focus:ring-2 focus:ring-offset-2',
+                'h-4 w-4 shrink-0 cursor-pointer transition-colors sm:h-5 sm:w-5',
+                'border-primary-500/50 bg-surface-800 appearance-none rounded border-2',
+                'focus:ring-primary-500 focus:ring-offset-surface-900 focus:ring-2 focus:ring-offset-2',
+                'checked:border-primary-500 checked:bg-primary-500',
+                'checked:bg-size-[12px] checked:bg-center checked:bg-no-repeat',
+                "checked:bg-[url('data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 13l4 4L19 7'/%3E%3C/svg%3E')]",
               )}
             />
           )}

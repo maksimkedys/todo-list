@@ -28,3 +28,9 @@ export enum InputVariant {
   Default = 'default',
   Search = 'search',
 }
+
+export enum TaskFilter {
+  All = 'all',
+  Incomplete = 'incomplete',
+  Completed = 'completed',
+}

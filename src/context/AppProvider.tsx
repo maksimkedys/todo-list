@@ -1,20 +1,13 @@
 import { useState, type ReactNode } from 'react'
 import { AppContext, type AppContextValue } from './AppContext'
 import type { ColumnType, TaskType } from '../types'
+import { TaskFilter } from '../types'
 import { generateId } from '../utils/id'
 import useLocalStorage from '../hooks/useLocalStorage'
 
 const DEFAULT_COLUMNS: ColumnType[] = [
-  {
-    id: generateId(),
-    title: 'To Do',
-    tasks: [],
-  },
-  {
-    id: generateId(),
-    title: 'In Progress',
-    tasks: [],
-  },
+  { id: generateId(), title: 'To Do', tasks: [] },
+  { id: generateId(), title: 'In Progress', tasks: [] },
 ]
 
 const AppProvider = ({ children }: { children: ReactNode }) => {
@@ -24,89 +17,135 @@ const AppProvider = ({ children }: { children: ReactNode }) => {
   })
 
   const [searchQuery, setSearchQuery] = useState('')
+  const [taskFilter, setTaskFilter] = useState<TaskFilter>(TaskFilter.All)
   const [columns, setColumns] = useState<ColumnType[]>(getColumns() ?? [])
   const [selectedTaskIds, setSelectedTaskIds] = useState<Set<string>>(new Set())
 
-  const addTask = (columnId: string, taskText: string) => {
-    const newTaskId = generateId()
-    const newTask: TaskType = {
-      id: newTaskId,
-      text: taskText,
-      completed: false,
-    }
-
-    const newColumns = columns.map((col) =>
-      col.id === columnId ? { ...col, tasks: [...col.tasks, newTask] } : col,
-    )
-
-    setColumns(newColumns)
-    saveColumns(newColumns)
+  const persistColumns = (next: ColumnType[]) => {
+    setColumns(next)
+    saveColumns(next)
   }
 
   const addColumn = (title: string) => {
-    const newColumn: ColumnType = {
-      id: generateId(),
-      title: title.trim(),
-      tasks: [],
-    }
-    setColumns((prev) => [...prev, newColumn])
-    saveColumns([...columns, newColumn])
+    const newColumn: ColumnType = { id: generateId(), title: title.trim(), tasks: [] }
+    persistColumns([...columns, newColumn])
   }
 
   const deleteColumn = (columnId: string) => {
-    const newColumns = columns.filter((col) => col.id !== columnId)
-    setColumns(newColumns)
-    saveColumns(newColumns)
+    const column = columns.find((c) => c.id === columnId)
+    if (column) {
+      setSelectedTaskIds((prev) => {
+        const next = new Set(prev)
+        column.tasks.forEach((t) => next.delete(t.id))
+        return next.size === prev.size ? prev : next
+      })
+    }
+    persistColumns(columns.filter((col) => col.id !== columnId))
+  }
+
+  const updateColumnTitle = (columnId: string, newTitle: string) => {
+    persistColumns(
+      columns.map((col) =>
+        col.id === columnId ? { ...col, title: newTitle.trim() || 'Untitled' } : col,
+      ),
+    )
+  }
+
+  const reorderColumns = (fromIndex: number, toIndex: number) => {
+    if (fromIndex === toIndex) return
+    const reordered = [...columns]
+    const [removed] = reordered.splice(fromIndex, 1)
+    reordered.splice(toIndex, 0, removed)
+    persistColumns(reordered)
+  }
+
+  const addTask = (columnId: string, taskText: string) => {
+    const newTask: TaskType = { id: generateId(), text: taskText, completed: false }
+    persistColumns(
+      columns.map((col) =>
+        col.id === columnId ? { ...col, tasks: [...col.tasks, newTask] } : col,
+      ),
+    )
   }
 
   const deleteTask = (taskId: string) => {
-    const newColumns = columns.map((col) => ({
-      ...col,
-      tasks: col.tasks.filter((task) => task.id !== taskId),
-    }))
-    setColumns(newColumns)
-    saveColumns(newColumns)
+    setSelectedTaskIds((prev) => {
+      if (!prev.has(taskId)) return prev
+      const next = new Set(prev)
+      next.delete(taskId)
+      return next
+    })
+    persistColumns(
+      columns.map((col) => ({
+        ...col,
+        tasks: col.tasks.filter((task) => task.id !== taskId),
+      })),
+    )
   }
 
   const toggleTaskCompletion = (taskId: string) => {
-    const newColumns = columns.map((col) =>
-      col.tasks.find((task) => task.id === taskId)
-        ? {
-            ...col,
-            tasks: col.tasks.map((task) =>
-              task.id === taskId ? { ...task, completed: !task.completed } : task,
-            ),
-          }
-        : col,
+    persistColumns(
+      columns.map((col) =>
+        col.tasks.some((t) => t.id === taskId)
+          ? {
+              ...col,
+              tasks: col.tasks.map((task) =>
+                task.id === taskId ? { ...task, completed: !task.completed } : task,
+              ),
+            }
+          : col,
+      ),
     )
-    setColumns(newColumns)
-    saveColumns(newColumns)
   }
 
   const editTask = (taskId: string, newText: string) => {
     const trimmed = newText.trim()
     if (!trimmed) return
-    const newColumns = columns.map((col) =>
-      col.tasks.some((t) => t.id === taskId)
-        ? {
-            ...col,
-            tasks: col.tasks.map((task) =>
-              task.id === taskId ? { ...task, text: trimmed } : task,
-            ),
-          }
-        : col,
+    persistColumns(
+      columns.map((col) =>
+        col.tasks.some((t) => t.id === taskId)
+          ? {
+              ...col,
+              tasks: col.tasks.map((task) =>
+                task.id === taskId ? { ...task, text: trimmed } : task,
+              ),
+            }
+          : col,
+      ),
     )
-    setColumns(newColumns)
-    saveColumns(newColumns)
   }
 
-  const updateColumnTitle = (columnId: string, newTitle: string) => {
-    const trimmed = newTitle.trim() || 'Untitled'
-    const newColumns = columns.map((col) =>
-      col.id === columnId ? { ...col, title: trimmed } : col,
+  const moveTask = (
+    taskId: string,
+    sourceColumnId: string,
+    targetColumnId: string,
+    targetIndex: number,
+  ) => {
+    const sourceCol = columns.find((c) => c.id === sourceColumnId)
+    const task = sourceCol?.tasks.find((t) => t.id === taskId)
+    if (!task) return
+
+    if (sourceColumnId === targetColumnId) {
+      const without = sourceCol!.tasks.filter((t) => t.id !== taskId)
+      const next = [...without]
+      next.splice(Math.min(targetIndex, without.length), 0, task)
+      persistColumns(columns.map((c) => (c.id === sourceColumnId ? { ...c, tasks: next } : c)))
+      return
+    }
+
+    persistColumns(
+      columns.map((col) => {
+        if (col.id === sourceColumnId) {
+          return { ...col, tasks: col.tasks.filter((t) => t.id !== taskId) }
+        }
+        if (col.id === targetColumnId) {
+          const next = [...col.tasks]
+          next.splice(Math.min(targetIndex, col.tasks.length), 0, task)
+          return { ...col, tasks: next }
+        }
+        return col
+      }),
     )
-    setColumns(newColumns)
-    saveColumns(newColumns)
   }
 
   const toggleTaskSelection = (taskId: string) => {
@@ -117,6 +156,8 @@ const AppProvider = ({ children }: { children: ReactNode }) => {
       return next
     })
   }
+
+  const clearTaskSelection = () => setSelectedTaskIds(new Set())
 
   const selectAllTasksInColumn = (columnId: string) => {
     const column = columns.find((c) => c.id === columnId)
@@ -144,59 +185,57 @@ const AppProvider = ({ children }: { children: ReactNode }) => {
     return column.tasks.every((t) => selectedTaskIds.has(t.id))
   }
 
-  const reorderColumns = (fromIndex: number, toIndex: number) => {
-    if (fromIndex === toIndex) return
-    const reordered = [...columns]
-    const [removed] = reordered.splice(fromIndex, 1)
-    reordered.splice(toIndex, 0, removed)
-    setColumns(reordered)
-    saveColumns(reordered)
+  const deleteSelectedTasks = () => {
+    if (selectedTaskIds.size === 0) return
+    persistColumns(
+      columns.map((col) => ({
+        ...col,
+        tasks: col.tasks.filter((task) => !selectedTaskIds.has(task.id)),
+      })),
+    )
+    setSelectedTaskIds(new Set())
   }
 
-  const moveTask = (
-    taskId: string,
-    sourceColumnId: string,
-    targetColumnId: string,
-    targetIndex: number,
-  ) => {
-    const sourceCol = columns.find((c) => c.id === sourceColumnId)
-    const task = sourceCol?.tasks.find((t) => t.id === taskId)
-    if (!task) return
+  const updateSelectedTasksCompletion = (completed: boolean) => {
+    if (selectedTaskIds.size === 0) return
+    persistColumns(
+      columns.map((col) => ({
+        ...col,
+        tasks: col.tasks.map((task) =>
+          selectedTaskIds.has(task.id) ? { ...task, completed } : task,
+        ),
+      })),
+    )
+  }
 
-    if (sourceColumnId === targetColumnId) {
-      const col = sourceCol!
-      const without = col.tasks.filter((t) => t.id !== taskId)
-      const insertIndex = Math.min(targetIndex, without.length)
-      const next = [...without]
-      next.splice(insertIndex, 0, task)
-      const newColumns = columns.map((c) => (c.id === sourceColumnId ? { ...c, tasks: next } : c))
-      setColumns(newColumns)
-      saveColumns(newColumns)
-      return
-    }
+  const moveSelectedTasksToColumn = (targetColumnId: string) => {
+    if (selectedTaskIds.size === 0) return
 
-    const newColumns = columns.map((col) => {
-      if (col.id === sourceColumnId) {
-        return { ...col, tasks: col.tasks.filter((t) => t.id !== taskId) }
-      }
-      if (col.id === targetColumnId) {
-        const insertIndex = Math.min(targetIndex, col.tasks.length)
-        const next = [...col.tasks]
-        next.splice(insertIndex, 0, task)
-        return { ...col, tasks: next }
-      }
-      return col
-    })
-    setColumns(newColumns)
-    saveColumns(newColumns)
+    const allTasks = columns.flatMap((col) => col.tasks)
+    const tasksToMove = allTasks.filter((t) => selectedTaskIds.has(t.id))
+    if (tasksToMove.length === 0) return
+
+    persistColumns(
+      columns.map((col) => {
+        const withoutSelected = col.tasks.filter((t) => !selectedTaskIds.has(t.id))
+        if (col.id === targetColumnId) {
+          return { ...col, tasks: [...withoutSelected, ...tasksToMove] }
+        }
+        return { ...col, tasks: withoutSelected }
+      }),
+    )
+    setSelectedTaskIds(new Set())
   }
 
   const value: AppContextValue = {
     columns,
     searchQuery,
     setSearchQuery,
+    taskFilter,
+    setTaskFilter,
     selectedTaskIds,
     toggleTaskSelection,
+    clearTaskSelection,
     selectAllTasksInColumn,
     deselectAllTasksInColumn,
     isColumnFullySelected,
@@ -204,11 +243,14 @@ const AppProvider = ({ children }: { children: ReactNode }) => {
     addColumn,
     deleteColumn,
     deleteTask,
+    deleteSelectedTasks,
     toggleTaskCompletion,
+    updateSelectedTasksCompletion,
     editTask,
     updateColumnTitle,
     reorderColumns,
     moveTask,
+    moveSelectedTasksToColumn,
   }
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>

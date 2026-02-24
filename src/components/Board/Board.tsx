@@ -11,7 +11,6 @@ const Board = () => {
           key={column.id}
           column={column}
           index={index}
-          tasks={column.tasks}
           searchQuery={searchQuery}
           onAddTask={addTask}
           onDeleteColumn={deleteColumn}

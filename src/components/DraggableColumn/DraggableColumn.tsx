@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { combine } from '@atlaskit/pragmatic-drag-and-drop/combine'
 import { draggable, dropTargetForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
 import cn from 'classnames'
-import type { ColumnType, TaskType } from '../../types'
+import type { ColumnType } from '../../types'
 import Column from '../Column'
 
 const COLUMN_TYPE = 'column'
@@ -10,7 +10,6 @@ const COLUMN_TYPE = 'column'
 interface DraggableColumnProps {
   column: ColumnType
   index: number
-  tasks?: TaskType[]
   searchQuery?: string
   onAddTask?: (columnId: string, taskText: string) => void
   onDeleteColumn?: (columnId: string) => void
@@ -20,7 +19,6 @@ interface DraggableColumnProps {
 const DraggableColumn = ({
   column,
   index,
-  tasks,
   searchQuery,
   onAddTask,
   onDeleteColumn,
@@ -75,7 +73,6 @@ const DraggableColumn = ({
       <Column
         isDropTarget={isOver}
         column={column}
-        tasks={tasks}
         searchQuery={searchQuery}
         onAddTask={onAddTask}
         onDeleteColumn={onDeleteColumn}
