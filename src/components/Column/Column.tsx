@@ -11,6 +11,7 @@ import { ButtonVariant, IconName, TaskFilter } from '../../types'
 import { InputVariant } from '../../types'
 import useInlineForm from '../../hooks/useInlineForm'
 import { fuzzyMatch } from '../../utils/fuzzySearch'
+import EmptyDropZone from '../EmptyDropZone'
 
 interface ColumnProps {
   column: ColumnType
@@ -172,6 +173,10 @@ const Column = ({
             />
           )
         })}
+
+        {displayedTasks.length === 0 && (
+          <EmptyDropZone columnId={column.id} onMoveTask={moveTask} />
+        )}
 
         {isAddingTask ? (
           <InlineForm
